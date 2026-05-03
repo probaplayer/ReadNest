@@ -68,6 +68,59 @@ Export-PfxCertificate -Cert $cert -FilePath "certs/https.pfx" -Password $pwd
 
 Or use the existing `certs/https.pfx` (password: `YourPasswordHere` for dev only).
 
+## Database Migration
+
+When model changes require database schema updates:
+
+### 1. Add Migration
+
+```bash
+# From ReadNest-BE directory
+docker compose run --rm -it api dotnet ef migrations add MigrationName
+```
+
+### 2. Apply Migration to Database
+
+```bash
+# Apply all pending migrations
+docker compose run --rm -it api dotnet ef database update
+
+# Or apply to specific migration
+docker compose run --rm -it api dotnet ef database update MigrationName
+```
+
+### 3. List Migrations
+
+```bash
+docker compose run --rm -it api dotnet ef migrations list
+```
+
+### 4. Rollback (if needed)
+
+```bash
+# Rollback to previous migration
+docker compose run --rm -it api dotnet ef database update PreviousMigrationName
+```
+
+---
+
+**For new clone:**
+
+```bash
+# 1. Clone repo
+git clone https://github.com/ngocanh0202/ReadNest.git
+
+# 2. Navigate to backend
+cd Back-end/ReadNest-BE
+
+# 3. Apply migrations
+docker compose up -d --build
+docker compose run --rm -it api dotnet ef database update
+
+# 4. Start services
+docker compose up -d
+```
+
 ## Configuration
 
 Environment variables in `docker-compose.yml`:

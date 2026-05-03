@@ -15,9 +15,12 @@ namespace ReadNest_BE.Controllers
     public class ChapterController : BaseController<Chapter>
     {
         IContentRepository _contentRepository;
-        public ChapterController(IChapterRepository repository, JwtService jwtService, IContentRepository contentRepository) : base(repository, jwtService)
+        IImageRepository _imageRepository;
+
+        public ChapterController(IChapterRepository repository, JwtService jwtService, IContentRepository contentRepository, IImageRepository imageRepository) : base(repository, jwtService)
         {
             _contentRepository = contentRepository;
+            _imageRepository = imageRepository;
         }
 
         [HttpGet("detail/{id}")]
@@ -58,6 +61,20 @@ namespace ReadNest_BE.Controllers
                 var oldContents = await _contentRepository.GetContentsByChapterId(chapterId);
                 await _contentRepository.DeleteRange(oldContents);
                 List<Content> newContent = contents.Adapt<List<Content>>();
+                
+                foreach (var content in newContent)
+                {
+                    if (!string.IsNullOrEmpty(content.ImageId))
+                    {
+                        var img = await _imageRepository.GetById(content.ImageId);
+                        if (img != null)
+                        {
+                            img.ExpiresAt = null;
+                            await _imageRepository.Update(img);
+                        }
+                    }
+                }
+                
                 var updatedEntity = PrepareEntityForUpdate(entity, entity, userId);
                 var createdContents = await _contentRepository.CreateOrUpdateMany(newContent, true);
                 var responeseContents = createdContents.Adapt<List<Content>>();

@@ -12,6 +12,7 @@ namespace ReadNest_BE.Repositories
     public class VolumnRepository : ExtendRepository<Volumn>, IVolumnRepository
     {
         IChapterRepository _chapterRepository;
+
         public VolumnRepository( AppDbContext appDbContext, JwtService jwtService, IChapterRepository chapterRepository) : base(appDbContext, jwtService)
         {
             _chapterRepository = chapterRepository;

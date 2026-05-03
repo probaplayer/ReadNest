@@ -154,6 +154,16 @@ namespace ReadNest_BE.Controllers
                 var createdNovel = await _repository.Create(prepareNovel);
                 detailNovel.Id = createdNovel.Id;
 
+                if (!string.IsNullOrEmpty(createdNovel.ImageId))
+                {
+                    var img = await _imageRepository.GetById(createdNovel.ImageId);
+                    if (img != null)
+                    {
+                        img.ExpiresAt = null;
+                        await _imageRepository.Update(img);
+                    }
+                }
+
                 await _categoryNovelRepository.CreateRangeWithNovelId(detailNovel.Categories!, detailNovel.Id);
 
                 if (detailNovel.VolumnVsChapters is not null && detailNovel.VolumnVsChapters.Count > 0)
@@ -163,6 +173,16 @@ namespace ReadNest_BE.Controllers
                         var newVolumn = vol.Volumn ?? new Volumn();
                         newVolumn.NovelId = detailNovel.Id;
                         newVolumn = await _volumnRepository.CreateOrUpdate(newVolumn, newVolumn.Id);
+
+                        if (!string.IsNullOrEmpty(newVolumn.ImageId))
+                        {
+                            var volImg = await _imageRepository.GetById(newVolumn.ImageId);
+                            if (volImg != null)
+                            {
+                                volImg.ExpiresAt = null;
+                                await _imageRepository.Update(volImg);
+                            }
+                        }
 
                         if (vol.Chapters is not null && vol.Chapters.Count > 0)
                         {
@@ -220,6 +240,16 @@ namespace ReadNest_BE.Controllers
                 var prepareNovel = PrepareEntityForUpdate(entity, entity, userId);
                 var updatedEntity = await _repository.Update(prepareNovel);
 
+                if (!string.IsNullOrEmpty(updatedEntity.ImageId))
+                {
+                    var img = await _imageRepository.GetById(updatedEntity.ImageId);
+                    if (img != null)
+                    {
+                        img.ExpiresAt = null;
+                        await _imageRepository.Update(img);
+                    }
+                }
+
                 await _categoryNovelRepository.CreateRangeWithNovelId(detailNovel.Categories!, updatedEntity.Id);
 
                 var oldVolumes = await _volumnRepository.GetVolumesByNovelId(updatedEntity.Id);
@@ -233,6 +263,16 @@ namespace ReadNest_BE.Controllers
                         volumn.NovelId = updatedEntity.Id;
 
                         var savedVolumn = await _volumnRepository.CreateOrUpdate(volumn, volumn.Id);
+
+                        if (!string.IsNullOrEmpty(savedVolumn.ImageId))
+                        {
+                            var volImg = await _imageRepository.GetById(savedVolumn.ImageId);
+                            if (volImg != null)
+                            {
+                                volImg.ExpiresAt = null;
+                                await _imageRepository.Update(volImg);
+                            }
+                        }
 
                         var oldChapters = await _chapterRepository.GetChaptersByVolumnId(savedVolumn.Id);
                         if (vol.Chapters is not null && vol.Chapters.Count > 0)

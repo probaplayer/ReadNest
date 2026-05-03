@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8' 
 
 services:
   api:
@@ -19,7 +19,7 @@ services:
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/readnest.db
       - Cors__AllowAll=true
     volumes:
-      - ./data/sqlite:/app/data
+      - ./data/sqlite/readnest.db:/app/data/readnest.db
       - ./data/uploads/images:/app/Uploads/images
       - ./certs:/app/certs   
     restart: unless-stopped

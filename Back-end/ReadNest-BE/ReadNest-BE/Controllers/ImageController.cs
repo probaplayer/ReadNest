@@ -113,7 +113,8 @@ namespace ReadNest_BE.Controllers
                     CreateBy = GetUserIdFromToken(),
                     UpdateBy = GetUserIdFromToken(),
                     CreateDate = DateTime.Now,
-                    UpdateDate = DateTime.Now
+                    UpdateDate = DateTime.Now,
+                    ExpiresAt = DateTime.Now.AddMinutes(15)
                 };
 
                 var savedImage = await _repository.Create(imageEntity);
@@ -156,7 +157,8 @@ namespace ReadNest_BE.Controllers
                         CreateBy = GetUserIdFromToken(),
                         UpdateBy = GetUserIdFromToken(),
                         CreateDate = DateTime.Now,
-                        UpdateDate = DateTime.Now
+                        UpdateDate = DateTime.Now,
+                        ExpiresAt = DateTime.Now.AddMinutes(15)
                     });
                     imageToResponses.Add(i);
                 }

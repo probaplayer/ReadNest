@@ -366,6 +366,5 @@ Uploads/
 ReadNestDb.db
 appsettings.json
 appsettings.Development.json
-Migrations/
 certs/
 data/

@@ -9,5 +9,6 @@
         public string? ContentType { get; set; }
         public string? CreateBy { get; set; }
         public string? UpdateBy { get; set; }
+        public DateTime? ExpiresAt { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace ReadNest_BE.Infrastructure
         public DbSet<Image> Images { get; set; }
         public DbSet<Chapter> Chapters { get; set; }
         public DbSet<Content> Contents { get; set; }
+        public DbSet<ImageCleanupFailure> ImageCleanupFailures { get; set; }
         public AppDbContext(DbContextOptions options) : base(options)
         {
 
