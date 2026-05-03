@@ -8,15 +8,19 @@ services:
     container_name: readnest-api
     ports:
       - "5000:8080"     
-      - "5001:8081"   
+      - "5001:8081"
+      - "8080:8080"
+      - "8443:8443"   
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_URLS=http://0.0.0.0:8080;https://0.0.0.0:8443
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/https.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=YourPasswordHere
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/readnest.db
+      - Cors__AllowAll=true
     volumes:
-      - ./data/uploads:/app/Uploads/images
       - ./data/sqlite:/app/data
+      - ./data/uploads/images:/app/Uploads/images
       - ./certs:/app/certs   
     restart: unless-stopped
 

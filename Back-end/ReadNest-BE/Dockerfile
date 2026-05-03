@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY --from=publish /app/publish .
 
-RUN mkdir -p Uploads/images
+RUN mkdir -p Uploads/images data
 
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080

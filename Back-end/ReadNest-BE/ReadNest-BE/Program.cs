@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ReadNest_BE.Infrastructure;
@@ -121,7 +123,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            if (builder.Environment.IsDevelopment())
+            var allowAll = builder.Configuration.GetValue<bool>("Cors:AllowAll", false);
+            if (builder.Environment.IsDevelopment() || allowAll)
             {
                 policy.AllowAnyOrigin()
                       .AllowAnyHeader()
@@ -228,23 +231,23 @@ builder.Services.AddAuthentication(option =>
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    dbContext.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 app.UseCors("AllowFrontend");
 
-string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "images");
 if (!Directory.Exists(uploadsPath))
 {
     Directory.CreateDirectory(uploadsPath);
 }
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
-    RequestPath = "/Uploads"
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/Uploads/images"
 });
 
 if (app.Environment.IsDevelopment())
@@ -253,7 +256,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disabled for Docker dev
 
 app.UseRateLimiter();
 app.UseAuthentication();

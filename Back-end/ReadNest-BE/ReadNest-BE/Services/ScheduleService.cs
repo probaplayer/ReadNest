@@ -22,12 +22,19 @@ namespace ReadNest_BE.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await DeleteTempImages();
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                await Task.Delay(TimeSpan.FromHours(5), stoppingToken);
                 await DeleteTempImages();
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromHours(5), stoppingToken);
+                    await DeleteTempImages();
+                }
+            }catch (Exception ex)
+            {
+                _logger.LogError($"Error in ScheduleService: {ex.Message}");
             }
+
         }
 
         private async Task DeleteTempImages()
