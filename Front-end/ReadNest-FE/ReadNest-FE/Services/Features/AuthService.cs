@@ -111,7 +111,7 @@ namespace ReadNest_FE.Services.Features
             _uiEventService.SetLoading(true);
             try
             {
-                _url = $"{_store.Host}/api/Auth/register";
+                _url = $"{_store.Host}/api/Auth/signup";
                 var response = await _httpClient.PostAsJsonAsync(_url, userRegister);
 
                 if (response.IsSuccessStatusCode)

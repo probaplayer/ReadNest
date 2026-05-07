@@ -4,7 +4,7 @@
 
 <div class="novel-card">
     <div class="body">
-        <img src="@novel.ImageUrl" alt="@novel.Id" />
+        <img src="@novel.ImageUrl" alt="@novel.Id" class="@(novel.IsAdult == true ? "blur-adult" : "")" />
         <div class="update">
             <a class="btn-link" href="@(Router.ChapterUrl!.Replace("{id}", novel.ChapterId))">
                 @novel!.ChapterName

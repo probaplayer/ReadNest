@@ -6,6 +6,7 @@ using ReadNest_BE.Exceptions;
 using ReadNest_BE.Interfaces.Repositories;
 using ReadNest_BE.Repositories;
 using ReadNest_BE.Services;
+using ReadNest_Enums;
 using ReadNest_Models;
 
 namespace ReadNest_BE.Controllers
@@ -108,6 +109,23 @@ namespace ReadNest_BE.Controllers
                 {
                     return NotFound(new Response<DetailNovel>(null, "Novel not found", false));
                 }
+
+                if (entity.IsLocked == true)
+                {
+                    string currentUserId = GetUserIdFromToken();
+                    string userRoles = _jwtService.GetRoleFromToken() ?? "";
+                    bool isAdmin = Utils.Utils.IsRole(userRoles, RoleType.ADMIN);
+                    bool isAuthor = entity.CreateBy == currentUserId;
+
+                    bool isShared = !string.IsNullOrEmpty(entity.SharedUserIds) &&
+                        entity.SharedUserIds.Split(',').Any(uid => uid == currentUserId);
+
+                    if (!isAdmin && !isAuthor && !isShared)
+                    {
+                        return StatusCode(403, new Response<DetailNovel>(null, "You do not have permission to read this novel", false));
+                    }
+                }
+
                 string imgId = entity.ImageId!;
                 if (!string.IsNullOrEmpty(imgId))
                 {
@@ -134,6 +152,53 @@ namespace ReadNest_BE.Controllers
                     }    
                 }
                 return Ok(new Response<DetailNovel>(entity, "Get novel successfully", true));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("{id}/share")]
+        public async Task<IActionResult> ShareNovel(string id, [FromBody] ShareNovelRequest request)
+        {
+            if (!CanRead(out var errorMessage))
+            {
+                return Unauthorized(errorMessage);
+            }
+            try
+            {
+                var entity = await _repository.GetById(id);
+                if (entity == null)
+                {
+                    return NotFound(new Response<bool>(false, "Novel not found", false));
+                }
+
+                string currentUserId = GetUserIdFromToken();
+                string userRoles = _jwtService.GetRoleFromToken() ?? "";
+                bool isAdmin = Utils.Utils.IsRole(userRoles, RoleType.ADMIN);
+                bool isAuthor = entity.CreateBy == currentUserId;
+
+                if (!isAdmin && !isAuthor)
+                {
+                    return StatusCode(403, new Response<bool>(false, "You do not have permission to share this novel", false));
+                }
+
+                var sharedIds = new List<string>();
+                if (!string.IsNullOrEmpty(entity.SharedUserIds))
+                {
+                    sharedIds = entity.SharedUserIds.Split(',').ToList();
+                }
+
+                if (!sharedIds.Contains(request.UserId))
+                {
+                    sharedIds.Add(request.UserId);
+                }
+
+                entity.SharedUserIds = string.Join(",", sharedIds);
+                await _repository.Update(entity);
+
+                return Ok(new Response<bool>(true, "User added successfully", true));
             }
             catch (Exception ex)
             {

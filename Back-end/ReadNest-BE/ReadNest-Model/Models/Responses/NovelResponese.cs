@@ -15,5 +15,8 @@
         public string? Categories { get; set; }
         public string? CreateBy { get; set; }
         public string? UpdateBy { get; set; }
+        public bool? IsLocked { get; set; }
+        public string? SharedUserIds { get; set; }
+        public bool? IsAdult { get; set; }
     }
 }

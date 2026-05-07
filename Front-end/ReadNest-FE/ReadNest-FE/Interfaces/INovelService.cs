@@ -10,6 +10,7 @@ namespace ReadNest_FE.Interfaces
         new Task<Response<DetailNovel>> GetValueById(string id);
         Task<Response<DetailNovel>> DetailPost(DetailNovel detailNovel);
         Task<Response<DetailNovel>> DetailPut(DetailNovel detailNovel);
+        Task<Response<bool>> ShareNovel(string novelId, string userId);
 
     }
 }

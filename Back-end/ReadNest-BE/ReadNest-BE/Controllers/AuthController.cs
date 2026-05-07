@@ -39,6 +39,41 @@ namespace ReadNest_BE.Controllers
             }
         }
 
+        [HttpPost("signup")]
+        [EnableRateLimiting("auth")]
+        public async Task<IActionResult> Signup([FromBody] UserLogin userRegister)
+        {
+            if (string.IsNullOrWhiteSpace(userRegister.UserName) || string.IsNullOrWhiteSpace(userRegister.Password))
+                return BadRequest("Username or password is empty");
+
+            var isUserExist = await _userRepository.IsUserExist(userRegister.UserName);
+            if (isUserExist)
+                return BadRequest("Username already exists");
+
+            try
+            {
+                var user = new User
+                {
+                    UserName = userRegister.UserName,
+                    PasswordHash = PasswordHandler.HashPassword(userRegister.Password),
+                };
+
+                var newUser = await _userRepository.Create(user);
+                await _userRoleRepository.Create(new UserRole
+                {
+                    UserId = newUser.Id,
+                    RoleId = "role-reader-002"
+                });
+
+                var userResponse = await _jwtService.Authenticate(userRegister);
+                return Ok(new Response<UserResponse>(userResponse, "Signup successful", true));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("Register")]
         [Authorize]
         public async Task<IActionResult> Register([FromBody] UserLogin userRegister)

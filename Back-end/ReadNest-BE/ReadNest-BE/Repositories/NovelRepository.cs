@@ -116,7 +116,10 @@ namespace ReadNest_BE.Repositories
                         WHERE cn.NovelId = n.Id
                     ) AS Categories,
                     n.CreateBy,
-                    n.UpdateBy
+                    n.UpdateBy,
+                    n.IsLocked,
+                    n.SharedUserIds,
+                    n.IsAdult
                 FROM Novels n
                 LEFT JOIN Images i ON i.Id = n.ImageId
                 LEFT JOIN (
@@ -224,7 +227,10 @@ namespace ReadNest_BE.Repositories
                             WHERE cn.NovelId = n.Id
                         ) AS Categories,
                         n.CreateBy,
-                        n.UpdateBy
+                        n.UpdateBy,
+                        n.IsLocked,
+                        n.SharedUserIds,
+                        n.IsAdult
                     FROM Novels n
                     LEFT JOIN Images i ON i.Id = n.ImageId
                     LEFT JOIN (

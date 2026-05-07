@@ -289,6 +289,41 @@ namespace ReadNest_FE.Services.Features
             }
         }
 
+        public async Task<Response<bool>> ShareNovel(string novelId, string userId)
+        {
+            _uiEventService.SetLoading(true);
+            try
+            {
+                _url = $"{_store.Host}/api/{typeof(Novel).Name.ToLower()}/{novelId}/share";
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _store.Token);
+
+                var response = await _httpClient.PostAsJsonAsync(_url, new { UserId = userId });
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Response<bool>? data = await response.Content.ReadFromJsonAsync<Response<bool>>();
+                    _uiEventService.ShowAlert(data?.Message!, "success");
+                    return data!;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    _uiEventService.ShowAlert(errorMessage, "error");
+                    return null!;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                handleOnExceptionRequest(ex);
+                return null!;
+            }
+            finally
+            {
+                _uiEventService.SetLoading(false);
+            }
+        }
+
 
     }
 }

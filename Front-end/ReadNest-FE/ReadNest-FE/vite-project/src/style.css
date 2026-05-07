@@ -3,3 +3,12 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 @import "./quill.snow.css";
+
+.blur-adult {
+  filter: blur(8px);
+  transition: filter 0.3s ease;
+}
+
+.novel-card:hover .blur-adult {
+  filter: blur(0);
+}

@@ -17,6 +17,10 @@
     {
         <div class="text-center text-gray-400 py-10">Loading...</div>
     }
+    else if (hasPermissionError)
+    {
+        <div class="text-center text-red-500 py-10">You do not have permission to read this novel.</div>
+    }
     else if (detailNovel == null)
     {
         <div class="text-center text-red-500 py-10">Novel not found.</div>
@@ -164,6 +168,7 @@
     [Parameter] public string Id { get; set; } = string.Empty;
     private DetailNovel? detailNovel;
     private bool isLoading = true;
+    private bool hasPermissionError = false;
     private Dictionary<string, bool> showChapterToLast = new();
 
     const int MAXCHAPTERSHOW = 6;
@@ -180,6 +185,7 @@
         try
         {
             isLoading = true;
+            hasPermissionError = false;
             StateHasChanged();
             var result = await NovelService.GetValueById(_id);
             if (result != null && result.Success)
@@ -194,6 +200,11 @@
                             showChapterToLast[vvc.Volumn.Id] = false;
                         }
                     }
+            }
+            else if (result != null && !result.Success && result.Message?.Contains("permission") == true)
+            {
+                hasPermissionError = true;
+                detailNovel = null;
             }
         }
         catch (Exception ex)

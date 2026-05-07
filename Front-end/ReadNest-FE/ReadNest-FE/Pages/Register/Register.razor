@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/register"
 @layout LayoutWithoutNav
 @using ReadNest_Models
 @using ReadNest_FE.Dictionaries
@@ -9,7 +9,7 @@
 @inject ReadNest_FE.Interfaces.IAuthService AuthService
 @inject IJSRuntime JS
 
-<PageTitle>Login - ReadNest</PageTitle>
+<PageTitle>Sign Up - ReadNest</PageTitle>
 
 <div class="fixed inset-0 flex flex-col items-center justify-center p-[5px]">
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 items-center w-full max-w-md px-4">
@@ -19,12 +19,12 @@
                     <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             </div>
-            <h1>Welcome to ReadNest</h1>
-            <p>Sign in to access your reading sanctuary</p>
+            <h1>Join ReadNest</h1>
+            <p>Create your account to start reading</p>
         </div>
 
         <div class="card w-full">
-            <EditForm Model="@user" OnValidSubmit="@OnLogin">
+            <EditForm Model="@user" OnValidSubmit="@OnRegister">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
@@ -40,9 +40,9 @@
                             </div>
                             <InputText id="input-username"
                                        class="input"
-                                       placeholder="Enter your username"
+                                       placeholder="Choose a username"
                                        @bind-Value="user.UserName"
-                                       disabled="@isLoadingLogin"
+                                       disabled="@isLoadingRegister"
                                        autocomplete="off" />
                         </div>
                         <p class="validation-message" for="input-username"></p>
@@ -63,9 +63,9 @@
                             <InputText id="input-password"
                                        type="password"
                                        class="input"
-                                       placeholder="Enter your password"
+                                       placeholder="Choose a password"
                                        @bind-Value="user.Password"
-                                       disabled="@isLoadingLogin"
+                                       disabled="@isLoadingRegister"
                                        autocomplete="off" />
                         </div>
                         <p class="validation-message" for="input-password"></p>
@@ -76,7 +76,7 @@
                     <label for="IP" class="!inline">Server Host</label>
                     <span class="text-red-600">*</span>
                     <div class="flex gap-2">
-                        <button type="button" tabindex="-1" class="btn-second !p-0 !w-[65px] !text-sm" @onclick="OnOpenSelectScheme" disabled="@isLoadingLogin">
+                        <button type="button" tabindex="-1" class="btn-second !p-0 !w-[65px] !text-sm" @onclick="OnOpenSelectScheme" disabled="@isLoadingRegister">
                             @scheme.ToUpper()
                         </button>
                         <div class="w-full">
@@ -90,7 +90,7 @@
                                            class="input"
                                            placeholder="e.g., localhost:5000"
                                            @bind-Value="host"
-                                           disabled="@isLoadingLogin"
+                                           disabled="@isLoadingRegister"
                                            autocomplete="off" />
                             </div>
                             <p class="validation-message" for="input-host"></p>
@@ -99,17 +99,17 @@
                 </div>
 
                 <button type="submit"
-                        disabled="@isLoadingLogin"
-                        class="btn-primary @(isLoadingLogin ? "disabled" : "")">
-                    Sign In
+                        disabled="@isLoadingRegister"
+                        class="btn-primary @(isLoadingRegister ? "disabled" : "")">
+                    Sign Up
                 </button>
             </EditForm>
         </div>
 
         <div class="mt-2 text-center">
             <p>
-                Don't have an account?
-                <a href="/register" class="font-bold">Sign up</a>
+                Already have an account?
+                <a href="/login" class="font-bold">Sign in</a>
             </p>
         </div>
     </div>
@@ -122,7 +122,7 @@
     private string scheme = "https";
     private string? host;
     private UserLogin user = new();
-    private bool isLoadingLogin;
+    private bool isLoadingRegister;
 
     protected override void OnInitialized()
     {
@@ -215,16 +215,16 @@
         return isValidUser && isValidPassword && isValidHost;
     }
 
-    private async Task OnLogin()
+    private async Task OnRegister()
     {
         if (!await ValidateInputs()) return;
 
-        isLoadingLogin = true;
+        isLoadingRegister = true;
 
         try
         {
             Store.Host = $"{scheme}://{host}";
-            var result = await AuthService.Login(user);
+            var result = await AuthService.Register(user);
             if (result is null) return;
             if (result.Success)
             {
@@ -243,11 +243,11 @@
         }
         catch (Exception ex)
         {
-            Layout?.ShowAlert($"❌ Login failed: {ex.Message}", "error");
+            Layout?.ShowAlert($"❌ Sign up failed: {ex.Message}", "error");
         }
         finally
         {
-            isLoadingLogin = false;
+            isLoadingRegister = false;
         }
     }
 }

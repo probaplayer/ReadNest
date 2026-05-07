@@ -81,3 +81,16 @@ docker-compose up --build
 
 - **AI**: Google Gemini API (configured via appsettings.json)
 - **Deployment**: GitHub Pages (via `.github/workflows/deploy.yml`)
+
+## Superpowers Framework
+
+- **CRITICAL**: You MUST read and follow the instructions in `skills/using-superpowers/SKILL.md` before starting tasks.
+- Explore and use the `skills/` directory to guide your workflow (e.g. `brainstorming`, `writing-plans`, `test-driven-development`).
+- Treat the `skills/` directory as an extension of these instructions.
+
+## OpenSpec Integration
+
+- **Spec-Driven Development (SDD)**: This project uses OpenSpec located in the `openspec/` directory.
+- **CRITICAL**: BEFORE writing any code, you MUST check the `openspec/specs/` directory for relevant specifications.
+- Ensure all implementation strictly adheres to the defined specs. If requirements are ambiguous or missing, discuss and update the spec first.
+- Check `openspec/changes/` for any pending proposals or architectural decisions.
