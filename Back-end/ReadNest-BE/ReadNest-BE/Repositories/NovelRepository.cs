@@ -135,8 +135,8 @@ namespace ReadNest_BE.Repositories
                     INNER JOIN Volumns v ON v.Id = c.VolumnId
                 ) AS latest_ch ON latest_ch.NovelId = n.Id AND latest_ch.rn = 1
                 WHERE ({0} IS NULL OR {0} = '' OR 
-                       n.Name LIKE CONCAT('%', {0}, '%') OR 
-                       n.Author LIKE CONCAT('%', {0}, '%'))
+                       n.Name LIKE '%' || {0} || '%' OR 
+                       n.Author LIKE '%' || {0} || '%')
                 ORDER BY latest_ch.UpdateDate DESC
                 LIMIT {1} OFFSET {2}";
 
@@ -246,8 +246,8 @@ namespace ReadNest_BE.Repositories
                         INNER JOIN Volumns v ON v.Id = c.VolumnId
                     ) AS latest_ch ON latest_ch.NovelId = n.Id AND latest_ch.rn = 1
                     WHERE 
-                        ({{0}} IS NULL OR {{0}} = '' OR n.Name LIKE CONCAT('%', {{0}}, '%'))
-                        AND ({{1}} IS NULL OR {{1}} = '' OR n.Author LIKE CONCAT('%', {{1}}, '%'))
+                        ({{0}} IS NULL OR {{0}} = '' OR n.Name LIKE '%' || {{0}} || '%')
+                        AND ({{1}} IS NULL OR {{1}} = '' OR n.Author LIKE '%' || {{1}} || '%')
                         AND ({{2}} IS NULL OR n.Status = {{2}})
                         {categoryCondition}
                     ORDER BY latest_ch.UpdateDate DESC
