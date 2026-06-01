@@ -38,7 +38,7 @@ It delivers a smooth and intelligent reading experience powered by **AI Studio i
 | Layer | Technology |
 |-------|-------------|
 | **Frontend** | Blazor + TailwindCSS |
-| **Backend** | .NET 8 / ASP.NET Core |
+| **Backend** | .NET 10 / ASP.NET Core |
 | **Database** | SQL Server / PostgreSQL |
 | **AI Integration** | AI Studio API |
 
